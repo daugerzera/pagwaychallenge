@@ -1,0 +1,34 @@
+version: "3.7"
+
+volumes:
+  pgdata_pagway:
+    external: true
+  pgadmin:
+    external: true
+
+services:
+  pghost:
+    image: postgres
+    restart: unless-stopped
+    environment:
+      TZ: America/Cuiaba
+      POSTGRES_PASSWORD: pgpass
+      POSTGRES_USER: pguser
+      POSTGRES_DB: pgdb
+    ports:
+      - "0.0.0.0:5432:5432"
+    volumes: 
+      - ./initdb.d:/docker-entrypoint-initdb.d:rw,z
+      - pgdata_pagway:/var/lib/postgresql/data
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: unless-stopped
+    environment:
+      TZ: America/Cuiaba
+      PGADMIN_DEFAULT_EMAIL: "postgres@email.com"
+      PGADMIN_DEFAULT_PASSWORD: "postgres"
+      PGADMIN_LISTEN_PORT: "5050"
+    volumes:
+      - pgadmin:/var/lib/pgadmin/
+    ports:
+      - "5050:5050"
