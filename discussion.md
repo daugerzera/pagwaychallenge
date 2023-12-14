@@ -28,6 +28,39 @@ e também:
 - validade_cartao
 - codigo_seguranca_cartao
 
-cada transação pode ter 0 ou apenas 1 recebível 
+cada transação pode ter 0 ou apenas 1 recebível. Os arquivos sql dentro da pasta [initdb.d](./initdb.d/) são utilizados para inicializar o banco.
 
 ![Diagrama Entidade Relacionamento](./tables.png)
+
+# Rotas
+
+São necessárias 3 rotas, uma para criar uma nova transação e recebendo um json desta forma:
+```json
+{
+    "valor": 123,
+    "descricao": "Smartband XYZ 3.0",
+    "nomePortadorCartao": "Amaral B. Cuiabano",
+    "numeroCartao": "1234123412341234",
+    "validadeCartao": "2038/12/31 23:59:59",
+    "codigoSegurancaCartao": "123"
+}
+```
+![novaTransacao](./novaTransacao.png)
+
+Uma outra rota para listar todas as transações registradas:
+![transacaoLista](./transacaoLista.png)
+
+E por último uma rota que calcula o saldo disponível e o prevista:
+![saldo](./saldo.png)
+
+restornando um json desta forma:
+```json
+{
+  "saldo": {
+    "disponivel": 0,
+    "previsto": 4200
+  }
+}
+```
+
+destacando que os valores estão em centavos e são sempre números inteiros. Nas 3 rotas utilizou na url `cuiabashoes` estático para designar um cliente fixo.
