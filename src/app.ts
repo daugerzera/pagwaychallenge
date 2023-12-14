@@ -7,6 +7,7 @@ app.set('trust proxy', 1)
 app.use(cors())
 
 app.post('/cuiabashoes/transacao', express.json(), async (req, res) => {
+  console.log(req.url, new Date())
   const {
     valor,
     descricao,
@@ -22,6 +23,7 @@ app.post('/cuiabashoes/transacao', express.json(), async (req, res) => {
 })
 
 app.get('/cuiabashoes/transacao', async (req, res) => {
+  console.log(req.url, new Date())
   const { page = '1', size = '20', order = 'asc' } = req.query
 
   res.status(200).json([{
@@ -35,6 +37,7 @@ app.get('/cuiabashoes/transacao', async (req, res) => {
 })
 
 app.get('/cuiabashoes/saldo', async (req, res) => {
+  console.log(req.url, new Date())
   res.status(200).json({
     "saldo": {
       "disponivel": 0,
