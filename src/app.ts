@@ -1,13 +1,19 @@
 import express from 'express'
 import cors from 'cors'
 
+import model from './model'
+import mkcashin from './service/cashin'
+import mkcashout from './service/cashout'
+
 const app = express()
 
 app.set('trust proxy', 1)
 app.use(cors())
 
-const onlyNumber = /^\d+$/
+const cashin = mkcashin(model)
+const cashout = mkcashout(model)
 
+const onlyNumber = /^\d+$/
 app.post('/cuiabashoes/transacao', express.json(), async (req, res) => {
   console.log(req.url, new Date())
   const {
@@ -41,8 +47,23 @@ app.post('/cuiabashoes/transacao', express.json(), async (req, res) => {
     return// throw
   }
 
+  const { transactionId, dataCriacaoTransacao } = await cashin({
+    codigoSegurancaCartao,
+    descricao,
+    nomePortadorCartao,
+    numeroCartao,
+    validadeCartao,
+    valor
+  })
+
   res.status(200).json({
     ok: true
+  })
+
+  await cashout({
+    dataCriacaoTransacao,
+    transactionId,
+    valorTransacao: valor
   })
 })
 
