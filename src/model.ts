@@ -80,17 +80,21 @@ WHERE
 ;`
 
 const persistCashin: PersistCashin = async (valorTransacao, descricaoTransacao, dataCriacaoTransacao, nomePortadorCartao, numeroCartao, validadeCartao, codigoSegurancaCartao) => {
-  const { rows } = await db.query<Rows>(SQLCashin, [valorTransacao, descricaoTransacao, dataCriacaoTransacao, nomePortadorCartao, numeroCartao, validadeCartao, codigoSegurancaCartao])
+  const { rows } =  await db.query<Rows>({
+    name: 'SQLCashin',
+    text: SQLCashin,
+    values:  [valorTransacao, descricaoTransacao, dataCriacaoTransacao, nomePortadorCartao, numeroCartao, validadeCartao, codigoSegurancaCartao]
+  })
 
   return rows[0].id
 }
 
 const persistCashout: PersistCashout = async (transactionId, statusRecebivel, dataPagamentoRecebivel, valorLiquidoRecebivel) => {
-  console.dir({
-    transactionId, statusRecebivel, dataPagamentoRecebivel, valorLiquidoRecebivel
+  await db.query({
+    name: 'SQLCashout',
+    text: SQLCashout,
+    values: [transactionId, statusRecebivel, dataPagamentoRecebivel, valorLiquidoRecebivel]
   })
-  
-  await db.query(SQLCashout, [transactionId, statusRecebivel, dataPagamentoRecebivel, valorLiquidoRecebivel])
 }
 
 interface ReadPaginatedTransactionParam {
@@ -115,10 +119,18 @@ const readPaginatedTransaction = async ({ offset, limit, order }: ReadPaginatedT
   let rows: Array<TransactionElement>
 
   if (order === 'ASC') {
-    const query = await db.query<TransactionElement>(SQLPaginatedTransactionASC, [offset, limit])
+    const query = await db.query<TransactionElement>({
+      name: 'SQLPaginatedTransactionASC',
+      text: SQLPaginatedTransactionASC,
+      values: [offset, limit]
+    })
     rows = query.rows
   } else {
-    const query = await db.query<TransactionElement>(SQLPaginatedTransactionDESC, [offset, limit])
+    const query = await db.query<TransactionElement>({
+      name: 'SQLPaginatedTransactionDESC',
+      text: SQLPaginatedTransactionDESC,
+      values: [offset, limit]
+    })
     rows = query.rows
   }
 
@@ -126,14 +138,22 @@ const readPaginatedTransaction = async ({ offset, limit, order }: ReadPaginatedT
 }
 
 const totalPendente = async (): Promise<number> => {
-  const query = await db.query<{ sum: number }>(SQLSumRecebivel, ['pendente'])
+  const query = await db.query<{ sum: number }>({
+    name: 'SQLSumRecebivel',
+    text: SQLSumRecebivel,
+    values: ['pendente']
+  })
   const total = query.rows[0].sum
 
   return total
 }
 
 const totalLiquidado = async (): Promise<number> => {
-  const query = await db.query<{ sum: number }>(SQLSumRecebivel, ['liquidado'])
+  const query = await db.query<{ sum: number }>({
+    name: 'SQLSumRecebivel',
+    text: SQLSumRecebivel,
+    values: ['liquidado']
+  })
   const total = query.rows[0].sum
 
   return total
