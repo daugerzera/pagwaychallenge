@@ -75,20 +75,21 @@ app.get('/cuiabashoes/transacao', async (req, res) => {
    * DEFAULT PAGINATION
    */
   const pageInt = Number.parseInt(String(page))
-  const pageValid = Number.isNaN(pageInt) || pageInt < 1 ? 1 : pageInt
+  const pageValid = !Number.isFinite(pageInt) || Number.isNaN(pageInt) || pageInt < 1 ? 1 : pageInt
+  //
   const sizeInt = Number.parseInt(String(size))
-  const sizeValid = Number.isNaN(pageInt) || pageInt < 1 ? 1 : pageInt
+  const sizeValid = Number.isNaN(sizeInt) || sizeInt < 1 ? 1 : sizeInt
   const sizeCrop = sizeValid > 200 ? 200 : sizeValid
-  const orderDesc = order === 'desc' || order === 'DESC'
+  //
+  const orderDesc = order === 'desc'
 
-  res.status(200).json([{
-    "valor": 123,
-    "descricao": "Smartband XYZ 3.0",
-    "nomePortadorCartao": "Amaral B. Cuiabano",
-    "numeroCartao": "1234123412341234",
-    "validadeCartao": "2038/12/31 23:59:59",
-    "codigoSegurancaCartao": "123"
-}])
+  const transactionList = await model.readPaginatedTransaction({
+    limit: sizeCrop,
+    offset: sizeCrop * (pageValid -1),
+    order: orderDesc ? 'DESC' : 'ASC'
+  })
+
+  res.status(200).json(transactionList)
 })
 
 app.get('/cuiabashoes/saldo', async (req, res) => {
