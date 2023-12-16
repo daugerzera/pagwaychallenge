@@ -71,6 +71,14 @@ OFFSET
   $1
 ;`
 
+const SQLSumRecebivel = `SELECT
+  SUM(valor_liquido_recebivel)
+FROM
+  pagway.recebivel
+WHERE
+  status_recebivel = $1
+;`
+
 const persistCashin: PersistCashin = async (valorTransacao, descricaoTransacao, dataCriacaoTransacao, nomePortadorCartao, numeroCartao, validadeCartao, codigoSegurancaCartao) => {
   const { rows } = await db.query<Rows>(SQLCashin, [valorTransacao, descricaoTransacao, dataCriacaoTransacao, nomePortadorCartao, numeroCartao, validadeCartao, codigoSegurancaCartao])
 
@@ -117,8 +125,24 @@ const readPaginatedTransaction = async ({ offset, limit, order }: ReadPaginatedT
   return rows
 }
 
+const totalPendente = async (): Promise<number> => {
+  const query = await db.query<{ sum: number }>(SQLSumRecebivel, ['pendente'])
+  const total = query.rows[0].sum
+
+  return total
+}
+
+const totalLiquidado = async (): Promise<number> => {
+  const query = await db.query<{ sum: number }>(SQLSumRecebivel, ['liquidado'])
+  const total = query.rows[0].sum
+
+  return total
+}
+
 export default {
   persistCashin,
   persistCashout,
-  readPaginatedTransaction
+  readPaginatedTransaction,
+  totalPendente,
+  totalLiquidado
 }

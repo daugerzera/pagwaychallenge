@@ -94,10 +94,14 @@ app.get('/cuiabashoes/transacao', async (req, res) => {
 
 app.get('/cuiabashoes/saldo', async (req, res) => {
   console.log(req.url, new Date())
+
+  const disponivel = await model.totalLiquidado()
+  const previsto = await model.totalPendente()
+
   res.status(200).json({
-    "saldo": {
-      "disponivel": 0,
-      "previsto": 4200
+    saldo: {
+      disponivel,
+      previsto,
     }
   })
 })
