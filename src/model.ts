@@ -27,7 +27,7 @@ pagway.recebivel (
   transacao_id,
   status_recebivel,
   data_pagamento_recebivel,
-  valor_liquito_recebivel
+  valor_liquido_recebivel
 )
 VALUES (
   $1,
@@ -77,12 +77,12 @@ const persistCashin: PersistCashin = async (valorTransacao, descricaoTransacao, 
   return rows[0].id
 }
 
-const persistCashout: PersistCashout = async (transactionId, statusRecebivel, dataPagamentoRecebivel, valorLiquitoRecebivel) => {
+const persistCashout: PersistCashout = async (transactionId, statusRecebivel, dataPagamentoRecebivel, valorLiquidoRecebivel) => {
   console.dir({
-    transactionId, statusRecebivel, dataPagamentoRecebivel, valorLiquitoRecebivel
+    transactionId, statusRecebivel, dataPagamentoRecebivel, valorLiquidoRecebivel
   })
   
-  await db.query(SQLCashout, [transactionId, statusRecebivel, dataPagamentoRecebivel, valorLiquitoRecebivel])
+  await db.query(SQLCashout, [transactionId, statusRecebivel, dataPagamentoRecebivel, valorLiquidoRecebivel])
 }
 
 interface ReadPaginatedTransactionParam {

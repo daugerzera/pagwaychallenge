@@ -4,7 +4,7 @@ INSERT INTO
     transacao_id,
     status_recebivel,
     data_pagamento_recebivel,
-    valor_liquito_recebivel
+    valor_liquido_recebivel
   )
   VALUES (
     1, 1, 'liquidado', '2024-02-14', 9500

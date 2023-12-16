@@ -3,7 +3,7 @@ interface DatalayerCashout {
     transactionId: number,
     statusRecebivel: string,
     dataPagamentoRecebivel: Date,
-    valorLiquitoRecebivel: number
+    valorLiquidoRecebivel: number
   ) => Promise<void>
 }
 
@@ -19,13 +19,13 @@ const costRate = 0.95
 const mkCashout = (db: DatalayerCashout) => async (props: CashoutProps) => {
   const statusRecebivel = 'pendente' // 'liquidado'
   const dataPagamentoRecebivel = new Date(props.dataCriacaoTransacao.getTime() + thirdyDaysMs)
-  const valorLiquitoRecebivel = Math.round(props.valorTransacao * costRate)
+  const valorLiquidoRecebivel = Math.round(props.valorTransacao * costRate)
 
   await db.persistCashout(
     props.transactionId,
     statusRecebivel,
     dataPagamentoRecebivel,
-    valorLiquitoRecebivel
+    valorLiquidoRecebivel
   )
 }
 
