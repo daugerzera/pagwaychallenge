@@ -16,9 +16,9 @@ export const mkCashout = async (props: CashoutProps) => {
   const valorLiquidoRecebivel = Math.round(props.valorTransacao * costRate);
 
   await Recebivel.create({
-    transacaoId: props.transactionId,
-    statusRecebivel,
-    dataPagamentoRecebivel,
-    valorLiquidoRecebivel,
+    transacao_id: props.transactionId,
+    status_recebivel: statusRecebivel,
+    data_pagamento_recebivel: dataPagamentoRecebivel,
+    valor_liquido_recebivel: valorLiquidoRecebivel
   });
 };

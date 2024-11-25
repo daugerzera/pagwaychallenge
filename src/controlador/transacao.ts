@@ -62,7 +62,6 @@ export const createTransaction = async (req: Request, res: Response) => {
 };
 
 export const getTransactions = async (req: Request, res: Response) => {
-    console.log(req.url, new Date());
     let { page = '1', size = '20', order = 'asc' } = req.query;
 
     const pageInt = parseInt(page as string);
