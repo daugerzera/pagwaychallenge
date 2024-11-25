@@ -42,4 +42,4 @@ const Transacao = sequelize.define('Transacao', {
     timestamps: false,
 });
 
-module.exports = Transacao;
+export default Transacao;

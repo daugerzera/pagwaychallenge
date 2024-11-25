@@ -37,4 +37,4 @@ const Recebivel = sequelize.define('Recebivel', {
     ],
 });
 
-module.exports = Recebivel;
+export default Recebivel;

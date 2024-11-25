@@ -1,11 +1,5 @@
-interface DatalayerCashout {
-  persistCashout: (
-    transactionId: number,
-    statusRecebivel: string,
-    dataPagamentoRecebivel: Date,
-    valorLiquidoRecebivel: number
-  ) => Promise<void>
-}
+import Recebivel from "../modelo/recebivel";
+
 
 interface CashoutProps {
   dataCriacaoTransacao: Date;
@@ -13,20 +7,18 @@ interface CashoutProps {
   transactionId: number;
 }
 
-const thirdyDaysMs = 30 * 24 * 60 * 60 * 1000
-const costRate = 0.95
+export const cashoutService = async (props: CashoutProps) => {
+  const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
+  const costRate = 0.95;
 
-const mkCashout = (db: DatalayerCashout) => async (props: CashoutProps) => {
-  const statusRecebivel = 'pendente' // 'liquidado'
-  const dataPagamentoRecebivel = new Date(props.dataCriacaoTransacao.getTime() + thirdyDaysMs)
-  const valorLiquidoRecebivel = Math.round(props.valorTransacao * costRate)
+  const statusRecebivel = 'pendente';
+  const dataPagamentoRecebivel = new Date(props.dataCriacaoTransacao.getTime() + thirtyDaysMs);
+  const valorLiquidoRecebivel = Math.round(props.valorTransacao * costRate);
 
-  await db.persistCashout(
-    props.transactionId,
+  await Recebivel.create({
+    transacaoId: props.transactionId,
     statusRecebivel,
     dataPagamentoRecebivel,
-    valorLiquidoRecebivel
-  )
-}
-
-export default mkCashout
+    valorLiquidoRecebivel,
+  });
+};
