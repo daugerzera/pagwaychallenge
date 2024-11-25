@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import mkCashin from '../service/cashin_old';
-import mkCashout from '../service/cashout_old';
 import Transacao from '../modelo/transacao';
+import { mkCashin } from '../service/cashin';
+import { mkCashout } from '../service/cashout';
 
 const onlyNumber = /^\d+$/;
 

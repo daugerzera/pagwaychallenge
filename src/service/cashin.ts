@@ -13,7 +13,7 @@ const checkValidCard = (props: CashinProps) => Promise.resolve();
 const antifraud = (props: CashinProps) => Promise.resolve();
 const mastercadApi = (props: CashinProps) => Promise.resolve();
 
-export const cashinService = async (props: CashinProps) => {
+export const mkCashin = async (props: CashinProps) => {
   await checkValidCard(props);
   await antifraud(props);
   await mastercadApi(props);

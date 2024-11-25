@@ -7,7 +7,7 @@ interface CashoutProps {
   transactionId: number;
 }
 
-export const cashoutService = async (props: CashoutProps) => {
+export const mkCashout = async (props: CashoutProps) => {
   const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
   const costRate = 0.95;
 
