@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import Recebivel from '../modelo/recebivel';
 
 export const getBalance = async (req: Request, res: Response) => {
-  console.log(req.url, new Date());
 
   try {
     const disponivelResult = await Recebivel.sum('valorLiquidoRecebivel', {
