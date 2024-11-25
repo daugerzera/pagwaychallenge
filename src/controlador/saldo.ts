@@ -4,14 +4,14 @@ import Recebivel from '../modelo/recebivel';
 export const getBalance = async (req: Request, res: Response) => {
 
   try {
-    const disponivelResult = await Recebivel.sum('valorLiquidoRecebivel', {
+    const disponivelResult = await Recebivel.sum('valor_liquido_recebivel', {
       where: {
-        statusRecebivel: 'liquidado',
+        status_recebivel: 'liquidado',
       },
     });
-    const previstoResult = await Recebivel.sum('valorLiquidoRecebivel', {
+    const previstoResult = await Recebivel.sum('valor_liquido_recebivel', {
       where: {
-        statusRecebivel: 'pendente',
+        status_recebivel: 'pendente',
       },
     });
 

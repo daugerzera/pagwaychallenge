@@ -22,13 +22,13 @@ export const mkCashin = async (props: CashinProps) => {
   const dataCriacaoTransacao = new Date();
 
   const transaction = await Transacao.create({
-    valorTransacao: props.valor,
-    descricaoTransacao: props.descricao,
-    dataCriacaoTransacao,
-    nomePortadorCartao: props.nomePortadorCartao,
-    numeroCartao: ultimos4Cartao,
-    validadeCartao: props.validadeCartao,
-    codigoSegurancaCartao: props.codigoSegurancaCartao,
+    valor_transacao: props.valor,
+    descricao_transacao: props.descricao,
+    data_criacao_transacao: dataCriacaoTransacao,
+    nome_portador_cartao: props.nomePortadorCartao,
+    numero_cartao: ultimos4Cartao,
+    validade_cartao: props.validadeCartao,
+    codigo_seguranca_cartao: props.codigoSegurancaCartao,
   });
 
   return {
