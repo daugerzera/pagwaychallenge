@@ -1,4 +1,11 @@
-# Desafio Developer PSP - Pagway
+
+# Desafio Pagway - Alexander Peccin
+
+Este projeto é uma versão simplificada de um Payment
+Service Provider (PSP).
+
+
+## Instalação
 
 É necessário docker e docker-compose para executar o banco de desenvolvimento.
 ```shell
@@ -33,3 +40,39 @@ Ainda com o banco e o servidor ligado, você pode executar o teste da api com o 
 ```
 npm run e2e
 ``` 
+## Documentação da API
+
+#### Retorna todas as transações
+
+```http
+  GET /cuiabashoes/transacao
+```
+
+| Parâmetro   | Tipo       | Descrição                           |
+| :---------- | :--------- | :---------------------------------- |
+| `page` | `string` | A página da busca |
+| `size` | `string` | O tamanho da página |
+| `order` | `string` | Ordenação dos dados (asc / desc) |
+
+#### Retorna um item
+
+```http
+  POST /cuiabashoes/transacao
+```
+
+| Parâmetro   | Tipo       | Descrição                                   |
+| :---------- | :--------- | :------------------------------------------ |
+| `valor`      | `number` | **Obrigatório**. Valor da transação |
+| `descricao`      | `string` | **Obrigatório**. Descrição |
+| `nomePortadorCartao`      | `string` | **Obrigatório**. Nome do portador do cartão |
+| `numeroCartao`      | `string` | **Obrigatório**. Número do cartão |
+| `validadeCartao`      | `date` | **Obrigatório**. Validade do cartão |
+| `codigoSegurancaCartao`      | `string` | **Obrigatório**. Código de segurança do cartão |
+
+
+## Autor
+
+- **Github**  [@daugerzera](https://www.github.com/daugerzera)
+
+- **Website:**  [Alexander Peccin](https://portifolio-iota-bay.vercel.app/)
+- **Linkedin:**  [Alexander Peccin](https://www.linkedin.com/in/alexander-peccin-616192106/)
