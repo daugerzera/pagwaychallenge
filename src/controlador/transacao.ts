@@ -1,19 +1,22 @@
 import { Request, Response } from 'express';
 import Transacao from '../modelo/transacao';
+import Recebivel from '../modelo/recebivel';
 import { mkCashin } from '../service/cashin';
 import { mkCashout } from '../service/cashout';
 
-export const createTransaction = async (req: Request, res: Response) => {
+const cashin = mkCashin(Transacao);
+const cashout = mkCashout(Recebivel);
 
+export const createTransaction = async (req: Request, res: Response) => {
     try {
-        const { transactionId, dataCriacaoTransacao } = await mkCashin(req.body);
+        const { transactionId, dataCriacaoTransacao } = await cashin(req.body);
 
         res.status(200).json({
             ok: true,
             // previousTransactions:
         });
 
-        await mkCashout({
+        await cashout({
             dataCriacaoTransacao,
             transactionId,
             valorTransacao: req.body.valor,
