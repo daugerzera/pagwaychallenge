@@ -1,11 +1,13 @@
 import { describe, expect, test } from 'vitest'
-import mkCashout from './cashout'
+import { mkCashout } from './cashout'
+import Recebivel from '../modelo/recebivel'
 
 const dadosRecebivelOK = {
   transactionId: 1,
   dataCriacaoTransacao: new Date(),
-  valorTransacao: 100_00
+  valorTransacao: 100.00
 }
+
 describe('BATERIA DE TESTES PARA O SERVIÇO DE CRIAÇÃO DE RECEBÍVEIS', () => {
   describe('setup da injeção de dependência', () => {
     test('o módulo mkCashout deve existir', () => {
@@ -17,7 +19,7 @@ describe('BATERIA DE TESTES PARA O SERVIÇO DE CRIAÇÃO DE RECEBÍVEIS', () => 
     })
     test('a função mkCashout deve retornar outra função', () => {
       const cashout = mkCashout({
-        persistCashout: () => Promise.resolve()
+        create: () => Promise.resolve()
       })
       const typeCashout = typeof cashout
       expect(typeCashout).toBe('function')
@@ -26,7 +28,7 @@ describe('BATERIA DE TESTES PARA O SERVIÇO DE CRIAÇÃO DE RECEBÍVEIS', () => 
   describe('retorna os valores corretos', () => {
     test('cashout deve retornar sem erros', () => {
       const cashout = mkCashout({
-        persistCashout: () => Promise.resolve()
+        create: () => Promise.resolve()
       })
 
       expect(() => cashout(dadosRecebivelOK)).not.throws()
@@ -35,9 +37,8 @@ describe('BATERIA DE TESTES PARA O SERVIÇO DE CRIAÇÃO DE RECEBÍVEIS', () => 
   describe('persiste os valores corretos', () => {
     test('transactionId deve ser o mesmo do argumento', async () => {
       const cashout = mkCashout({
-        persistCashout: (transactionId, statusRecebivel, dataPagamentoRecebivel, valorLiquidoRecebivel) => {
-          expect(transactionId).toBe(dadosRecebivelOK.transactionId)
-
+        create: ({ transacao_id }: typeof Recebivel) => {
+          expect(transacao_id).toBe(dadosRecebivelOK.transactionId)
           return Promise.resolve()
         }
       })
@@ -46,9 +47,8 @@ describe('BATERIA DE TESTES PARA O SERVIÇO DE CRIAÇÃO DE RECEBÍVEIS', () => 
     })
     test('statusRecebivel deve ser pendente', async () => {
       const cashout = mkCashout({
-        persistCashout: (transactionId, statusRecebivel, dataPagamentoRecebivel, valorLiquidoRecebivel) => {
-          expect(statusRecebivel).toBe('pendente')
-
+        create: ({ status_recebivel }: typeof Recebivel) => {
+          expect(status_recebivel).toBe('pendente')
           return Promise.resolve()
         }
       })
@@ -57,8 +57,8 @@ describe('BATERIA DE TESTES PARA O SERVIÇO DE CRIAÇÃO DE RECEBÍVEIS', () => 
     })
     test('dataPagamentoRecebivel deve ser 30 dias maior do argumento', async () => {
       const cashout = mkCashout({
-        persistCashout: (transactionId, statusRecebivel, dataPagamentoRecebivel, valorLiquidoRecebivel) => {
-          const diff = dataPagamentoRecebivel.getTime() - dadosRecebivelOK.dataCriacaoTransacao.getTime()
+        create: ({ data_pagamento_recebivel }: typeof Recebivel) => {
+          const diff = data_pagamento_recebivel.getTime() - dadosRecebivelOK.dataCriacaoTransacao.getTime()
           const dias = diff / 1000 / 60 / 60 / 24
           expect(dias).toBe(30)
 
@@ -70,8 +70,8 @@ describe('BATERIA DE TESTES PARA O SERVIÇO DE CRIAÇÃO DE RECEBÍVEIS', () => 
     })
     test('valorLiquidoRecebivel deve ser 5% menor do argumento', async () => {
       const cashout = mkCashout({
-        persistCashout: (transactionId, statusRecebivel, dataPagamentoRecebivel, valorLiquidoRecebivel) => {
-          const percent = (dadosRecebivelOK.valorTransacao - valorLiquidoRecebivel) / dadosRecebivelOK.valorTransacao
+        create: ({ valor_liquido_recebivel }: typeof Recebivel) => {
+          const percent = (dadosRecebivelOK.valorTransacao - valor_liquido_recebivel) / dadosRecebivelOK.valorTransacao
           expect(percent).toBe(0.05)
 
           return Promise.resolve()

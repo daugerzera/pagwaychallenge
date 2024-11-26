@@ -1,53 +1,51 @@
-interface DataLayerCashin {
-  persistCashin: (
-    valorTransacao: number,
-    descricaoTransacao: string,
-    dataCriacaoTransacao: Date,
-    nomePortadorCartao: string,
-    numeroCartao: string,
-    validadeCartao: Date,
-    codigoSegurancaCartao: string
-  ) => Promise<number>
-}
+import { CashinProps } from '../interface';
+import Transacao from '../modelo/transacao';
 
-interface CashinProps {
-  valor: number;
-  descricao: string;
-  nomePortadorCartao: string;
-  numeroCartao: string;
-  validadeCartao: Date;
-  codigoSegurancaCartao: string;
-}
 
-/**
- * FAKE SERVICES
- */
-const checkValidCard = (props: CashinProps) => Promise.resolve()
-const antifraud = (props: CashinProps) => Promise.resolve()
-const mastercadApi = (props: CashinProps) => Promise.resolve()
+const onlyNumber = /^\d+$/;
 
-const mkCashin = (db: DataLayerCashin) => async (props: CashinProps) => {
-  await checkValidCard(props)
-  await antifraud(props)
-  await mastercadApi(props)
+const checkValidCard = (props: CashinProps) => Promise.resolve();
+const antifraud = (props: CashinProps) => Promise.resolve();
+const mastercardApi = (props: CashinProps) => Promise.resolve();
 
-  const ultimos4Cartao = props.numeroCartao.slice(-4)
-  const dataCriacaoTransacao = new Date()
+const checkFields = (props: CashinProps) => {
+  const { valor, descricao, nomePortadorCartao, numeroCartao, validadeCartao, codigoSegurancaCartao } = props;
+  const valorOK = typeof valor === 'number' && Number.isFinite(valor) && valor > 0 && valor % 1 === 0;
+  const descricaoOK = typeof descricao === 'string' && descricao.length > 0 && descricao.length < 1024;
+  const nomePortadorCartaoOK = typeof nomePortadorCartao === 'string' && nomePortadorCartao.length > 0 && nomePortadorCartao.length < 1024;
+  const numeroCartaoOK = typeof numeroCartao === 'string' && numeroCartao.length === 16 && onlyNumber.test(numeroCartao);
+  const validadeCartaoDate = new Date(validadeCartao);
+  const validadeCartaoOK = !isNaN(validadeCartaoDate.getTime()) && validadeCartaoDate.getTime() > Date.now();
+  const codigoSegurancaCartaoOK = typeof codigoSegurancaCartao === 'string' && codigoSegurancaCartao.length === 3 && onlyNumber.test(codigoSegurancaCartao);
+  const allOK = valorOK && descricaoOK && nomePortadorCartaoOK && numeroCartaoOK && validadeCartaoOK && codigoSegurancaCartaoOK;
 
-  const transactionId = await db.persistCashin(
-    props.valor,
-    props.descricao,
-    dataCriacaoTransacao,
-    props.nomePortadorCartao,
-    ultimos4Cartao,
-    props.validadeCartao,
-    props.codigoSegurancaCartao
-  )
+  if (!allOK) throw new Error('Dados de entrada inválidos');
+};
 
-  return {
-    dataCriacaoTransacao,
-    transactionId
-  }
-}
+export const mkCashin = (Model: typeof Transacao) => {
+  return async (props: CashinProps) => {
+    checkFields(props);
 
-export default mkCashin
+    await checkValidCard(props);
+    await antifraud(props);
+    await mastercardApi(props);
+
+    const ultimos4Cartao = props.numeroCartao.slice(-4);
+    const dataCriacaoTransacao = new Date();
+
+    const transaction = await Model.create({
+      valor_transacao: props.valor,
+      descricao_transacao: props.descricao,
+      data_criacao_transacao: dataCriacaoTransacao,
+      nome_portador_cartao: props.nomePortadorCartao,
+      numero_cartao: ultimos4Cartao,
+      validade_cartao: props.validadeCartao,
+      codigo_seguranca_cartao: props.codigoSegurancaCartao
+    });
+
+    return {
+      dataCriacaoTransacao,
+      transactionId: transaction.id
+    };
+  };
+};

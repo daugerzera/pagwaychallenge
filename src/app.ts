@@ -1,110 +1,36 @@
-import express from 'express'
+import express, { NextFunction, Request, Response } from 'express';
 import cors from 'cors'
+import transacaoRotas from './rota/transacoes';
+import saldoRotas from './rota/saldo';
+import Transacao from './modelo/transacao';
+import Recebivel from './modelo/recebivel';
 
-import model from './model'
-import mkcashin from './service/cashin'
-import mkcashout from './service/cashout'
+const app = express();
+app.set('trust proxy', 1);
+app.use(cors());
+app.use(express.json());
 
-const app = express()
+app.use('/cuiabashoes', transacaoRotas);
+app.use('/cuiabashoes', saldoRotas);
 
-app.set('trust proxy', 1)
-app.use(cors())
+Recebivel.belongsTo(Transacao, {
+    foreignKey: 'transacao_id',
+    constraints: true,
+    onDelete: 'NO ACTION',
+    onUpdate: 'CASCADE',
+});
 
-const cashin = mkcashin(model)
-const cashout = mkcashout(model)
+Transacao.hasOne(Recebivel, {
+    foreignKey: 'transacao_id',
+});
 
-const onlyNumber = /^\d+$/
-app.post('/cuiabashoes/transacao', express.json(), async (req, res) => {
-  console.log(req.url, new Date())
-  const {
-    valor,
-    descricao,
-    nomePortadorCartao,
-    numeroCartao,
-    validadeCartao,
-    codigoSegurancaCartao
-  } = req.body
-
-  /**
-   * VALIDATE INPUTS
-   */
-  const valorOK = typeof valor === 'number' && Number.isFinite(valor) && valor > 0 && valor % 1 === 0
-  const descricaoOK = typeof descricao === 'string' && descricao.length > 0 && descricao.length < 1024
-  const nomePortadorCartaoOK = typeof nomePortadorCartao === 'string' && nomePortadorCartao.length > 0 && nomePortadorCartao.length < 1024
-  const numeroCartaoOK = typeof numeroCartao === 'string' && numeroCartao.length === 16 && onlyNumber.test(numeroCartao)
-  const validadeCartaoDate = new Date(validadeCartao)
-  const validadeCartaoOK = new Date(validadeCartaoDate).getTime() > Date.now() // NaN > now === false
-  const codigoSegurancaCartaoOK = typeof codigoSegurancaCartao === 'string' && codigoSegurancaCartao.length === 3 && onlyNumber.test(codigoSegurancaCartao)
-  const allOK = valorOK && descricaoOK && nomePortadorCartaoOK && numeroCartaoOK && validadeCartaoOK && codigoSegurancaCartaoOK
-
-  if (!allOK) {
-    res.status(400).send({
-      error: true,
-      message: 'invalid input'
-    })
-    console.error(req.body)
-
-    return// throw
-  }
-
-  const { transactionId, dataCriacaoTransacao } = await cashin({
-    codigoSegurancaCartao,
-    descricao,
-    nomePortadorCartao,
-    numeroCartao,
-    validadeCartao,
-    valor
-  })
-
-  res.status(200).json({
-    ok: true
-  })
-
-  await cashout({
-    dataCriacaoTransacao,
-    transactionId,
-    valorTransacao: valor
-  })
-})
-
-app.get('/cuiabashoes/transacao', async (req, res) => {
-  console.log(req.url, new Date())
-  const { page = '1', size = '20', order = 'asc' } = req.query
-
-  /**
-   * DEFAULT PAGINATION
-   */
-  const pageInt = Number.parseInt(String(page))
-  const pageValid = !Number.isFinite(pageInt) || Number.isNaN(pageInt) || pageInt < 1 ? 1 : pageInt
-  //
-  const sizeInt = Number.parseInt(String(size))
-  const sizeValid = Number.isNaN(sizeInt) || sizeInt < 1 ? 1 : sizeInt
-  const sizeCrop = sizeValid > 200 ? 200 : sizeValid
-  //
-  const orderDesc = order === 'desc'
-
-  const transactionList = await model.readPaginatedTransaction({
-    limit: sizeCrop,
-    offset: sizeCrop * (pageValid -1),
-    order: orderDesc ? 'DESC' : 'ASC'
-  })
-
-  res.status(200).json(transactionList)
-})
-
-app.get('/cuiabashoes/saldo', async (req, res) => {
-  console.log(req.url, new Date())
-
-  const disponivel = await model.totalLiquidado()
-  const previsto = await model.totalPendente()
-
-  res.status(200).json({
-    saldo: {
-      disponivel,
-      previsto,
-    }
-  })
-})
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+    console.error(err.stack);
+    res.status(500).send('Algo deu errado!');
+});
 
 
-export default app
+
+export default app;
+
+
