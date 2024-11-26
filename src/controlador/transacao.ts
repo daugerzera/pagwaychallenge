@@ -12,8 +12,7 @@ export const createTransaction = async (req: Request, res: Response) => {
         const { transactionId, dataCriacaoTransacao } = await cashin(req.body);
 
         res.status(200).json({
-            ok: true,
-            // previousTransactions:
+            ok: true
         });
 
         await cashout({

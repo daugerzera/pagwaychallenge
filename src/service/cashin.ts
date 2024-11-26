@@ -1,11 +1,6 @@
-interface CashinProps {
-  valor: number;
-  descricao: string;
-  nomePortadorCartao: string;
-  numeroCartao: string;
-  validadeCartao: Date;
-  codigoSegurancaCartao: string;
-}
+import { CashinProps } from '../interface';
+import Transacao from '../modelo/transacao';
+
 
 const onlyNumber = /^\d+$/;
 
@@ -27,7 +22,7 @@ const checkFields = (props: CashinProps) => {
   if (!allOK) throw new Error('Dados de entrada inválidos');
 };
 
-export const mkCashin = (Model: any) => {
+export const mkCashin = (Model: typeof Transacao) => {
   return async (props: CashinProps) => {
     checkFields(props);
 
@@ -50,7 +45,7 @@ export const mkCashin = (Model: any) => {
 
     return {
       dataCriacaoTransacao,
-      transactionId: transaction.id,
+      transactionId: transaction.id
     };
   };
 };

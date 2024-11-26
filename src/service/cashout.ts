@@ -1,10 +1,7 @@
-interface CashoutProps {
-  dataCriacaoTransacao: Date;
-  valorTransacao: number;
-  transactionId: number;
-}
+import { CashoutProps } from "../interface";
+import Recebivel from "../modelo/recebivel";
 
-export const mkCashout = (Model: any) => {
+export const mkCashout = (Model: typeof Recebivel) => {
   return async (props: CashoutProps) => {
     const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
     const costRate = 0.95;
