@@ -54,7 +54,7 @@ npm run e2e
 | `size` | `string` | O tamanho da página |
 | `order` | `string` | Ordenação dos dados (asc / desc) |
 
-#### Retorna um item
+#### Processa uma transação
 
 ```http
   POST /cuiabashoes/transacao
@@ -68,6 +68,12 @@ npm run e2e
 | `numeroCartao`      | `string` | **Obrigatório**. Número do cartão |
 | `validadeCartao`      | `date` | **Obrigatório**. Validade do cartão |
 | `codigoSegurancaCartao`      | `string` | **Obrigatório**. Código de segurança do cartão |
+
+#### Consulta saldo
+
+```http
+  GET /cuiabashoes/saldo
+```
 
 
 ## Autor
